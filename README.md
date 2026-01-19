@@ -17,7 +17,7 @@ A header-only library providing a unified scaling system for ImGui widgets.
 include(FetchContent)
 FetchContent_Declare(
     ImGuiScaling
-    GIT_REPOSITORY https://github.com/user/imgui-scaling.git
+    GIT_REPOSITORY https://github.com/carquiza/imgui-scaling.git
     GIT_TAG v1.0.0
 )
 FetchContent_MakeAvailable(ImGuiScaling)

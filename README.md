@@ -1,0 +1,148 @@
+# ImGuiScaling
+
+A header-only library providing a unified scaling system for ImGui widgets.
+
+## Features
+
+- **ScaleConfig**: Combines DPI scale and user preference scale
+- **BaseSize**: Standard UI element sizes at 1.0x scale (desktop and touch modes)
+- **Scalable**: Mixin class for adding scaling support to widgets
+- **Header-only**: No build required, just include
+
+## Integration
+
+### Option 1: FetchContent
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+    ImGuiScaling
+    GIT_REPOSITORY https://github.com/user/imgui-scaling.git
+    GIT_TAG v1.0.0
+)
+FetchContent_MakeAvailable(ImGuiScaling)
+
+target_link_libraries(YourWidget PRIVATE ImGuiScaling::ImGuiScaling)
+```
+
+### Option 2: Subdirectory
+
+```cmake
+add_subdirectory(external/imgui-scaling)
+target_link_libraries(YourWidget PRIVATE ImGuiScaling::ImGuiScaling)
+```
+
+### Option 3: Copy Header
+
+Just copy `include/ImGuiScaling/ImGuiScaling.hpp` to your project.
+
+## Usage
+
+### Basic Scaling
+
+```cpp
+#include <ImGuiScaling/ImGuiScaling.hpp>
+
+// Create scale config
+ImGuiScaling::ScaleConfig scaleConfig;
+scaleConfig.dpiScale = 1.5f;   // From glfwGetWindowContentScale()
+scaleConfig.userScale = 1.0f;  // From user preference
+
+float scale = scaleConfig.GetEffectiveScale();  // 1.5f
+
+// Use with base sizes
+float buttonHeight = ImGuiScaling::BaseSize::BUTTON_HEIGHT * scale;  // 42px
+float rowHeight = ImGuiScaling::BaseSize::ROW_HEIGHT * scale;        // 36px
+```
+
+### Scalable Widget Class
+
+```cpp
+#include "imgui.h"
+#include <ImGuiScaling/ImGuiScaling.hpp>
+
+class MyDialog : public ImGuiScaling::Scalable {
+public:
+    void Open(float scale) {
+        SetScale(scale);
+        m_isOpen = true;
+    }
+
+    void Render() {
+        if (!m_isOpen) return;
+
+        // Check and handle scale changes
+        if (HasScaleChanged()) {
+            // Recalculate cached sizes if needed
+            AcknowledgeScaleChange();
+        }
+
+        // Use scaled sizes
+        using namespace ImGuiScaling::BaseSize;
+
+        float btnHeight = Scaled(BUTTON_HEIGHT);
+        float btnWidth = Scaled(BUTTON_WIDTH);
+
+        if (ImGui::Button("OK", ImVec2(btnWidth, btnHeight))) {
+            m_isOpen = false;
+        }
+    }
+
+private:
+    bool m_isOpen = false;
+};
+```
+
+### Touch Mode
+
+```cpp
+bool touchMode = true;
+float scale = 1.5f;
+
+// Select appropriate base size
+float rowHeight = touchMode
+    ? ImGuiScaling::BaseSize::Touch::ROW_HEIGHT * scale   // 78px
+    : ImGuiScaling::BaseSize::ROW_HEIGHT * scale;         // 36px
+```
+
+### Using the Scaled Helper
+
+```cpp
+class MyWidget : public ImGuiScaling::Scalable {
+    void Render() {
+        // Use ScaledTouch for touch-aware sizing
+        float rowHeight = ScaledTouch(
+            BaseSize::ROW_HEIGHT,        // Desktop: 24px
+            BaseSize::Touch::ROW_HEIGHT, // Touch: 52px
+            m_touchMode
+        );
+    }
+};
+```
+
+## Base Sizes Reference
+
+### Desktop Mode (default)
+
+| Constant | Value | Description |
+|----------|-------|-------------|
+| `BUTTON_HEIGHT` | 28px | Standard button height |
+| `BUTTON_WIDTH` | 80px | Standard button width |
+| `INPUT_HEIGHT` | 26px | Text input field height |
+| `ROW_HEIGHT` | 24px | List/table row height |
+| `ICON_SIZE` | 18px | Icon dimensions |
+| `SPACING` | 8px | Standard spacing |
+| `SCROLLBAR_WIDTH` | 16px | Scrollbar width |
+
+### Touch Mode
+
+| Constant | Value | Description |
+|----------|-------|-------------|
+| `Touch::BUTTON_HEIGHT` | 48px | Touch-friendly button |
+| `Touch::ROW_HEIGHT` | 52px | Touch-friendly row |
+| `Touch::ICON_SIZE` | 28px | Larger icons |
+| `Touch::SCROLLBAR_WIDTH` | 40px | Wide scrollbar for fingers |
+
+## License
+
+MIT License - See LICENSE file for details.

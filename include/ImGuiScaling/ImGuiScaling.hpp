@@ -153,6 +153,33 @@ inline float Scale(float v, float scale) {
     return v * scale;
 }
 
+/**
+ * @brief Get the global user scale value
+ * @return Current user scale (persisted to imgui.ini)
+ */
+float GetUserScale();
+
+/**
+ * @brief Set the global user scale value
+ * @param scale New user scale (will be persisted to imgui.ini)
+ */
+void SetUserScale(float scale);
+
+/**
+ * @brief Register ImGui settings handler for scale persistence
+ *
+ * Call this once after ImGui::CreateContext() to enable automatic
+ * saving/loading of the user scale to imgui.ini.
+ *
+ * Usage:
+ * @code
+ * ImGui::CreateContext();
+ * ImGuiScaling::RegisterSettingsHandler();
+ * // ... rest of initialization
+ * @endcode
+ */
+void RegisterSettingsHandler();
+
 } // namespace ImGuiScaling
 
 // Optional: Include this after imgui.h for ImVec2 helpers

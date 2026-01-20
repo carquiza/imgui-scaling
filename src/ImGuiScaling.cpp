@@ -20,10 +20,6 @@ float GetUserScale() {
 void SetUserScale(float scale) {
     if (scale > 0.0f) {
         g_userScale = scale;
-        // Mark settings as dirty so ImGui will save on next opportunity
-        if (ImGui::GetCurrentContext()) {
-            ImGui::MarkIniSettingsDirty();
-        }
     }
 }
 

@@ -7,6 +7,7 @@ A header-only library providing a unified scaling system for ImGui widgets.
 - **ScaleConfig**: Combines DPI scale and user preference scale
 - **BaseSize**: Standard UI element sizes at 1.0x scale (desktop and touch modes)
 - **Scalable**: Mixin class for adding scaling support to widgets
+- **Scale Persistence**: Automatically saves/restores user scale preference via imgui.ini
 - **Header-only**: No build required, just include
 
 ## Integration
@@ -119,6 +120,65 @@ class MyWidget : public ImGuiScaling::Scalable {
     }
 };
 ```
+
+### Scale Persistence (imgui.ini)
+
+ImGuiScaling can automatically save and restore the user's scale preference using ImGui's settings system. This requires registering a settings handler during initialization.
+
+**Important**: The initialization order matters. You must:
+1. Call `ImGui::CreateContext()`
+2. Call `ImGuiScaling::RegisterSettingsHandler()`
+3. Call `ImGui::LoadIniSettingsFromDisk()` to load persisted settings
+
+```cpp
+// During application initialization
+IMGUI_CHECKVERSION();
+ImGui::CreateContext();
+
+// Register settings handler (must be after CreateContext, before LoadIniSettings)
+ImGuiScaling::RegisterSettingsHandler();
+
+// Explicitly load settings after handlers are registered
+ImGui::LoadIniSettingsFromDisk(ImGui::GetIO().IniFilename);
+
+// Now retrieve the persisted scale and apply it
+float userScale = ImGuiScaling::GetUserScale();  // Returns 1.0f if not previously set
+ImGui::GetIO().FontGlobalScale = userScale;
+
+// Continue with rest of ImGui setup...
+ImGui_ImplGlfw_InitForOpenGL(window, true);
+ImGui_ImplOpenGL3_Init(glsl_version);
+```
+
+When the user changes the scale (e.g., via Ctrl+Plus/Minus), update and persist it:
+
+```cpp
+void OnUserScaleChanged(float newScale) {
+    // Clamp to reasonable range
+    newScale = std::clamp(newScale, 0.5f, 3.0f);
+
+    // Persist for next session (saved to imgui.ini on shutdown)
+    ImGuiScaling::SetUserScale(newScale);
+
+    // Apply to ImGui
+    ImGui::GetIO().FontGlobalScale = newScale;
+
+    // Update any Scalable widgets
+    myDialog.SetScale(newScale);
+}
+```
+
+The settings are stored in a `[ImGuiScaling][Data]` section:
+```ini
+[ImGuiScaling][Data]
+UserScale=1.500
+```
+
+### Global Scale Functions
+
+- `GetUserScale()` - Get the current/persisted user scale (default: 1.0f)
+- `SetUserScale(float)` - Set the user scale (will be persisted on shutdown)
+- `RegisterSettingsHandler()` - Register ImGui settings handler for persistence
 
 ## Base Sizes Reference
 

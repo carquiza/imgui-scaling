@@ -3,6 +3,7 @@
 
 #include "ImGuiScaling/ImGuiScaling.hpp"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# ImGuiScaling requires imgui
+# The user should have imgui available via find_package or as a target
+if(NOT TARGET imgui AND NOT TARGET imgui::imgui)
+    find_dependency(imgui CONFIG)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/ImGuiScalingTargets.cmake")
+
+check_required_components(ImGuiScaling)

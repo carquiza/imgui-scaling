@@ -1,5 +1,7 @@
 # Build directories
 build/
+build-linux/
+build-win/
 cmake-build-*/
 out/
 

@@ -2,7 +2,7 @@
 # https://github.com/carquiza/imgui-scaling
 
 cmake_minimum_required(VERSION 3.14)
-project(ImGuiScaling VERSION 0.1.1 LANGUAGES CXX)
+project(ImGuiScaling VERSION 0.1.2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -61,6 +61,15 @@ endif()
 # Source groups for IDEs
 source_group("Header Files" FILES ${IMGUISCALING_HEADERS})
 source_group("Source Files" FILES ${IMGUISCALING_SOURCES})
+
+# =============================================================================
+# Tests (GTest, headless — opt-in via IMGUISCALING_BUILD_TESTS=ON)
+# =============================================================================
+option(IMGUISCALING_BUILD_TESTS "Build GTest unit tests" OFF)
+if(IMGUISCALING_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif()
 
 # =============================================================================
 # Installation rules (for vcpkg and find_package support)

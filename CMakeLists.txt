@@ -2,7 +2,7 @@
 # https://github.com/carquiza/imgui-scaling
 
 cmake_minimum_required(VERSION 3.14)
-project(ImGuiScaling VERSION 1.0.0 LANGUAGES CXX)
+project(ImGuiScaling VERSION 0.1.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
